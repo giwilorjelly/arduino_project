@@ -19,28 +19,55 @@ void setup() {
   Serial.println("Session Started");
 
   //setting speed
-  rightDC.setSpeed(200);
-  leftDC.setSpeed(200);
+  rightDC.setSpeed(100);
+  leftDC.setSpeed(100);
 
 }
 
 void loop() {
   if(Serial.available()>0){
-        char data= Serial.read();
+        String data= Serial.readString();
         Serial.println(data);
-          switch(data){
+
+        if(data.indexOf("change_")>-1){
+            Serial.print("Changing speed to: ");
+            int v= data.substring(data.indexOf('_')+1,data.length()).toInt();
+            haltDC();
+            changeSpeed(v);
+            Serial.println(v);
             
-            case '1':goForward();
+          }
+          /*switch(data){
+            case "front":goForward();//1
             break;
-            case '2':goBackward();
+            case "back":goBackward();//2
             break;
-            case '4':turnRight();
+            case "right":turnRight();//4
             break;
-            case '3':turnLeft();
+            case "left":turnLeft();//3
             break;
-            default:haltDC();
-            }
-            //haltDC();
+            default:haltDC();  
+            }*/
+        else if(data.equals("front")){
+            goForward();
+            Serial.println("goForward");
+          }
+        else if(data.equals("back")){
+            goBackward();
+            Serial.println("goBackward");
+          }
+        else if(data.equals("right")){
+            turnRight();
+            Serial.println("turnRight");
+          }
+        else if(data.equals("left")){
+            turnLeft();
+            Serial.println("turnLeft");
+          }
+        else {
+            haltDC();
+            Serial.println("STOP");
+          }        
       }
 
 }
@@ -56,31 +83,27 @@ void haltDC(){
 }
 
 void goForward(){
-  defaultSpeed();
+  //defaultSpeed();
   rightDC.run(FORWARD);
   leftDC.run(FORWARD);
-  //delay(sensitivity);
 }
 
 void goBackward(){
-  defaultSpeed();
+  //defaultSpeed();
   rightDC.run(BACKWARD);
   leftDC.run(BACKWARD);
-  //delay(sensitivity);
 }
 
 void turnRight(){
-  changeSpeed(100);
+  //changeSpeed(100);
   rightDC.run(BACKWARD);
   leftDC.run(FORWARD);
-  //delay(sensitivity);
 }
 
 void turnLeft(){
-  changeSpeed(100);
+  //changeSpeed(100);
   rightDC.run(FORWARD);
   leftDC.run(BACKWARD);
-  //delay(sensitivity);
 }
 
 void changeSpeed(int v){
